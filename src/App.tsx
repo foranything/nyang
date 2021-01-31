@@ -1,25 +1,35 @@
-import React from "react";
-import logo from "./logo.svg";
-import "./App.css";
+import React, { useState } from "react";
+import { Router, Route, Switch } from "react-router-dom";
+import { createBrowserHistory } from "history";
+import { UserContext } from "context";
+import { RootPage, LoginPage } from "pages";
+import { AuthRoute, NonAuthRoute } from "components";
 
+export const customHistory = createBrowserHistory();
 function App() {
+  const [loggedIn, setLoggedIn] = useState(false);
+  const rootComponent = loggedIn ? RootPage : LoginPage;
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
+    <UserContext.Provider value={{ loggedIn, setLoggedIn }}>
+      <Router history={customHistory}>
+        <Switch>
+          <Route exact path="/" component={rootComponent} />
+          <NonAuthRoute
+            isAuth={loggedIn}
+            exact
+            path="/accounts/login"
+            component={LoginPage}
+          />
+          <AuthRoute
+            isAuth={loggedIn}
+            exact
+            path="/auth"
+            component={() => <div>auth</div>}
+          />
+          <Route render={() => <h3>No Match</h3>} />
+        </Switch>
+      </Router>
+    </UserContext.Provider>
   );
 }
 
