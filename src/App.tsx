@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Router, Route, Switch } from "react-router-dom";
 import { createBrowserHistory } from "history";
 import { UserContext } from "context";
@@ -9,6 +9,11 @@ export const customHistory = createBrowserHistory();
 function App() {
   const [loggedIn, setLoggedIn] = useState(false);
   const rootComponent = loggedIn ? RootPage : LoginPage;
+
+  useEffect(() => {
+    localStorage.setItem("loggedIn", JSON.stringify(loggedIn));
+  }, [loggedIn]);
+
   return (
     <UserContext.Provider value={{ loggedIn, setLoggedIn }}>
       <Router history={customHistory}>
